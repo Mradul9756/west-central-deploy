@@ -1,18 +1,22 @@
 // generated snippet
 // table component work
 import React, {useState, useEffect} from 'react';
-import {Link} from "react-router-dom";
+import {Link, useParams} from "react-router-dom";
 import "./Home.css"
 import {toast} from "react-toastify";
 import axios from "axios";
 
+// columns to delete - boone_st_bash, WCDP, HEART, Youth, Racial_Justice, Neighbor_Day_BA
+// to add - Events_Attended, isDonor, Areas_of_Interest
+
 const Home = () => {
+
     const [data, setData] = useState([]);
     // fetch all data from mysql database using api
     // using async for api 
     // http://localhost:5000/api/get - backend API
     const loadData = async () => {
-        const response = await axios.get("http://localhost:5000/api/get");
+        const response = await axios.get("https://west-central.herokuapp.com/api/get");
         setData(response.data);
     };
 
@@ -23,19 +27,28 @@ const Home = () => {
         loadData();
     }, []);
 
-    const deleteContact = (Fname) => {
-        if(window.confirm("Are you sure you wanted to delete this contact?")) {
-            axios.delete(`http://localhost:5000/api/remove/${Fname}`);
+    const deleteContact = (Id) => {
+        if(window.confirm(`Are you sure you want to delete this Contact?`)) {
+            axios.delete(`https://west-central.herokuapp.com/api/remove/${Id}`);
             alert("Contact deleted successfully");
             setTimeout(() => loadData(), 500);
         }
     }
+    const handleAuth = () => {
+        localStorage.clear()
+        window.location.reload()
+    }
+
     return(
         <div className='Body' style={{marginTop: "15px"}}>
-            <h1> West Central  Contacts</h1>
+            <h1 className='WestCentralHeading'> West Central  Contacts</h1>
             <Link to="/addContact">
-                <button className='btn btn-contact'>Add Contact</button>
+                <button type='AddNewContact'>Add a New Contact</button>
             </Link>
+            <Link to="/sort">
+                <button type='sort'>Sort Fields</button>
+            </Link>
+            <button className='logOutBtn' onClick={handleAuth}> log out</button>
             <div className='TableContainer'>
                 <div className="styled-table">
                 <thead>
@@ -55,16 +68,13 @@ const Home = () => {
                         <th style={{textAlign: "center"}}>Want Info </th>
                         <th style={{textAlign: "center"}}>Fallows Conversation </th>
                         <th style={{textAlign: "center"}}>Durrett mtg </th>
-                        <th style={{textAlign: "center"}}>Boone St Bash </th>
-                        <th style={{textAlign: "center"}}>WCDP </th>
-                        <th style={{textAlign: "center"}}>Racial Justice </th>
-                        <th style={{textAlign: "center"}}>Heart </th>
-                        <th style={{textAlign: "center"}}>Youth</th>
                         <th style={{textAlign: "center"}}>Hobbies</th>
                         <th style={{textAlign: "center"}}>Skill to Share</th>
                         <th style={{textAlign: "center"}}>Address</th>
-                        <th style={{textAlign: "center"}}>Neighbor day,BA</th>
-                        
+                        <th style={{textAlign: "center"}}>Events Attended</th>
+                        <th style={{textAlign: "center"}}>isDonor</th>
+                        <th style={{textAlign: "center"}}>Areas of Interest</th>
+                      
                         {/* First Name,Last Name,Organization,Position,Phone,Other Phone,Email,WC Resident,Notes,Allow Photos,Want Info,Fallows Conversation,
                         Durrett mtg,Boone St Bash,WCDP,Racial Justice,Heart,Youth,Hobbies,Skill to Share,Address,Neighbor day_BA  */}
                     </tr>
@@ -76,15 +86,15 @@ const Home = () => {
                         return(
                             <tr key={item.id}>
                                 <td>
-                                    <Link to={`/update/${item.Fname}`}>
+                                    <Link to={`/update/${item.Id}`}>
                                     <button className='btn btn-edit'>Edit</button>
                                     </Link>
-                                    <button className='btn btn-delete' onClick={() => deleteContact(item.Fname)}>Delete</button>
-                                    <Link to={`/view/${item.Fname}`}>
+                                    <button className='btn btn-delete' onClick={() => deleteContact(item.Id)}>Delete</button>
+                                    <Link to={`/view/${item.Id}`}>
                                     <button className='btn btn-view'>View</button>
                                     </Link>
                                 </td>
-                                <th scope="row">{index+1}</th>
+                                <td>{index+1}</td>
                                 <td>{item.Fname}</td>
                                 <td>{item.Lname}</td>
                                 <td>{item.Org}</td>
@@ -98,15 +108,12 @@ const Home = () => {
                                 <td>{item.Want_info}</td>
                                 <td>{item.Fallows_conversation}</td>
                                 <td>{item.Durrett_mtg}</td>
-                                <td>{item.Boone_St_Bash}</td>
-                                <td>{item.WCDP}</td>
-                                <td>{item.Racial_Justice}</td>
-                                <td>{item.HEART}</td>
-                                <td>{item.Youth}</td>
                                 <td>{item.Hobbies}</td>
-                                <td>{item.Skill_to_Share}</td>
+                                <td>{item.Skill_to_share}</td>
                                 <td>{item.Address}</td>
-                                <td>{item.Neighbor_day_BA}</td>
+                                <td>{item.Events_Attended}</td>
+                                <td>{item.isDonor}</td>
+                                <td>{item.Areas_of_Interest}</td>
                             </tr>
                         )
                     })}

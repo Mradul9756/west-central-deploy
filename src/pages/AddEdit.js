@@ -6,49 +6,68 @@ import { toast } from "react-toastify"
 import "./AddEdit.css"
 import { useNavigate } from 'react-router-dom';
 
+// columns to delete - boone_st_bash, WCDP, HEART, Youth, Racial_Justice, Neighbor_Day_BA
+// to add - Events_Attended, isDonor, Areas_of_Interest
+
 const intialState = {
-    fname: "",lname: "",org: "",position: "",phone: "",Other_Phone: "",email: "",WC_Resident: "",
-    notes: "",Allow_Photos: "",Want_Info: "",Fallows_Conversation: "",durrett_mtg: "",boone_St_Bash: "",wcdp: "",
-    racial_Justice: "",Heart: "",youth: "",hobbies: "",skill_to_Share: "",address: "",neighbor_day_BA: "",
-    };
+    Id: "",Fname: "",Lname: "",Org: "",Position: "",Phone: "",Other_phone: "",Email: "",WC_Resident: "",
+    Notes: "",Allow_Photos: "",Want_Info: "",Fallows_Conversation: "",Durrett_mtg: "",Hobbies: "",Skill_to_share: "",Address: "",
+    Events_Attended: "", isDonor: "", Areas_of_Interest: ""
+};
+
 
 const AddEdit = () =>{
     const [state, setState] = useState(intialState);
 
-    const {fname,lname,org,position,phone,Other_phone,email,WC_resident,notes,Allow_photos,Want_info,Fallows_conversation,
-        durrett_mtg,boone_St_bash,wcdp,racial_Justice,Heart,youth,hobbies,skill_to_Share,address,neighbor_day_BA} = state;
+    const {Fname,Lname,Org,Position,Phone,Other_phone,Email,WC_Resident,Notes,Allow_photos,Want_info,Fallows_conversation,
+        Durrett_mtg,Hobbies,Skill_to_share,Address,Events_Attended, isDonor, Areas_of_Interest} = state;
     
     // for timeout setting
     const navigate = useNavigate();
     
-    // to get the fname from the table (use for record update)
-    const {Fname} =  useParams();
+    // to get the id from the table (use for record update)
+    const {Id} =  useParams();
 
     // only run when we have the fname (user is updating the existing contact)
     useEffect(() => {
-        axios.get(`http://localhost:5000/api/get/${Fname}`)
+        axios.get(`https://west-central.herokuapp.com/api/get/${Id}`)
         .then((resp) => setState({...resp.data[0]}))
-    }, [Fname])
+    }, [Id]);
    
     const handleSubmit = (e) => {
         e.preventDefault();
-        if (!fname){
+        if (!Fname){
             alert("please provide value for First Name");
         } else{
+            if(!Id){
+                axios.post("https://west-central.herokuapp.com/api/post",{
+                    Id, Fname,Lname,Org,Position,Phone,Other_phone,Email,WC_Resident,Notes,Allow_photos,Want_info,Fallows_conversation,
+                    Durrett_mtg,Hobbies,Skill_to_share,Address,Events_Attended, isDonor, Areas_of_Interest
+                })
+                .then(() => {
+                    setState({Id: "",Fname: "",Lname: "",Org: "",Position: "",Phone: "",Other_phone: "",Email: "",WC_Resident: "",
+                    Notes: "",Allow_Photos: "",Want_Info: "",Fallows_Conversation: "",Durrett_mtg: "",Hobbies: "",Skill_to_share: "",Address: "",
+                    Events_Attended: "", isDonor: "", Areas_of_Interest: ""});
+                })
+                .catch((err) => toast.error(err.response.data));
+                alert("Contact Added Successfully")
+                navigate("/")
             
-        axios.post("http://localhost:5000/api/post",{
-            fname,lname,org,position,phone,Other_phone,email,WC_resident,notes,Allow_photos,Want_info,Fallows_conversation,
-            durrett_mtg,boone_St_bash,wcdp,racial_Justice,Heart,youth,hobbies,skill_to_Share,address,neighbor_day_BA
-        })
-        .then(() => {
-            setState({fname: "",lname: "",org: "",position: "",phone: "",Other_Phone: "",email: "",WC_Resident: "",
-            notes: "",Allow_Photos: "",Want_Info: "",Fallows_Conversation: "",durrett_mtg: "",boone_St_Bash: "",wcdp: "",
-            racial_Justice: "",Heart: "",youth: "",hobbies: "",skill_to_Share: "",address: "",neighbor_day_BA: ""});
-        })
-        .catch((err) => toast.error(err.response.data));
-        alert("Contact Added Successfully")
-        setTimeout(() => navigate("/"), 500);
-        console.log(fname)
+            } else{
+                axios.
+                    put(`https://west-central.herokuapp.com/api/update/${Id}`,{
+                    Id, Fname,Lname,Org,Position,Phone,Other_phone,Email,WC_Resident,Notes,Allow_photos,Want_info,Fallows_conversation,
+                    Durrett_mtg,Hobbies,Skill_to_share,Address,Events_Attended, isDonor, Areas_of_Interest
+                })
+                .then(() => {
+                    setState({Id:"",Fname: "",Lname: "",Org: "",Position: "",Phone: "",Other_phone: "",Email: "",WC_Resident: "",
+                    Notes: "",Allow_Photos: "",Want_Info: "",Fallows_Conversation: "",Durrett_mtg: "",Boone_St_Bash: "",WCDP: "",
+                    Racial_Justice: "",HEART: "",Youth: "",Hobbies: "",Skill_to_share: "",Address: "",Neighbor_Day_BA: ""});
+                })
+                .catch((err) => toast.error(err.response.data));
+                alert("Contact Updated Successfully")
+                navigate("/")
+            }
     }
     };
 
@@ -68,49 +87,49 @@ const AddEdit = () =>{
             }}
             onSubmit={handleSubmit}
             >
-                <label htmlFor='fname'>First Name</label>
+                <label htmlFor='Fname'>First Name</label>
 <input
              type="text"
-             id="fname"
-             name="fname"
+             id="Fname"
+             name="Fname"
              placeholder='Matthew'
-             value={fname || ""}
+             value={Fname || ""}
              onChange={handleInputChange}
              />
-<label htmlFor='lname'>Last Name</label>
+<label htmlFor='Lname'>Last Name</label>
 <input
              type="text"
-             id="lname"
-             name="lname"
+             id="Lname"
+             name="Lname"
              placeholder='Abbott'
-             value={lname || ""}
+             value={Lname || ""}
              onChange={handleInputChange}
              />
-<label htmlFor='org'>Organization Name</label>
+<label htmlFor='Org'>Organization Name</label>
 <input
              type="text"
-             id="org"
-             name="org"
+             id="Org"
+             name="Org"
              placeholder='XYZ Inc'
-             value={org || ""}
+             value={Org || ""}
              onChange={handleInputChange}
              />
-<label htmlFor='position'>Position</label>
+<label htmlFor='Position'>Position</label>
 <input
              type="text"
-             id="position"
-             name="position"
+             id="Position"
+             name="Position"
              placeholder='Manager'
-             value={position || ""}
+             value={Position || ""}
              onChange={handleInputChange}
              />
-<label htmlFor='phone'>Phone Number</label>
+<label htmlFor='Phone'>Phone Number</label>
 <input
              type="text"
-             id="phone"
-             name="phone"
+             id="Phone"
+             name="Phone"
              placeholder='123-456-7890'
-             value={phone || ""}
+             value={Phone || ""}
              onChange={handleInputChange}
              />
 <label htmlFor='Other_phone'>Other Phone Number</label>
@@ -122,31 +141,31 @@ const AddEdit = () =>{
              value={Other_phone || ""}
              onChange={handleInputChange}
              />
-                <label htmlFor='email'>Email</label>
+                <label htmlFor='Email'>Email</label>
 <input
              type="text"
-             id="email"
-             name="email"
-             placeholder='example@email.com'
-             value={email || ""}
+             id="Email"
+             name="Email"
+             placeholder='example@Email.com'
+             value={Email || ""}
              onChange={handleInputChange}
              />
-<label htmlFor='WC_resident'>WC Resident</label>
+<label htmlFor='WC_Resident'>WC Resident</label>
 <input
              type="text"
-             id="WC_resident"
-             name="WC_resident"
+             id="WC_Resident"
+             name="WC_Resident"
              placeholder='yes or no'
-             value={WC_resident || ""}
+             value={WC_Resident || ""}
              onChange={handleInputChange}
              />
-<label htmlFor='notes'>Notes</label>
+<label htmlFor='Notes'>Notes</label>
 <input
              type="text"
-             id="notes"
-             name="notes"
+             id="Notes"
+             name="Notes"
              placeholder='Additional information'
-             value={notes || ""}
+             value={Notes || ""}
              onChange={handleInputChange}
              />
 <label htmlFor='Allow_photos'>Allow Photos</label>
@@ -176,98 +195,72 @@ const AddEdit = () =>{
              value={Fallows_conversation || ""}
              onChange={handleInputChange}
              />
-<label htmlFor='durrett_mtg'>Durrett Mtg</label>
+<label htmlFor='Durrett_mtg'>Durrett Mtg</label>
 <input
              type="text"
-             id="durrett_mtg"
-             name="durrett_mtg"
+             id="Durrett_mtg"
+             name="Durrett_mtg"
              placeholder='yes or no'
-             value={durrett_mtg || ""}
+             value={Durrett_mtg || ""}
              onChange={handleInputChange}
              />
-<label htmlFor='boone_St_bash'>Boone St Bash</label>
+<label htmlFor='Hobbies'>Hobbies</label>
 <input
              type="text"
-             id="boone_St_bash"
-             name="boone_St_bash"
-             placeholder='yes or no'
-             value={boone_St_bash || ""}
-             onChange={handleInputChange}
-             />
-<label htmlFor='wcdp'>Wcdp</label>
-<input
-             type="text"
-             id="wcdp"
-             name="wcdp"
-             placeholder='yes or no'
-             value={wcdp || ""}
-             onChange={handleInputChange}
-             />
-<label htmlFor='racial_Justice'>Racial Justice</label>
-<input
-             type="text"
-             id="racial_Justice"
-             name="racial_Justice"
-             placeholder='yes or no'
-             value={racial_Justice || ""}
-             onChange={handleInputChange}
-             />
-<label htmlFor='Heart'>Heart</label>
-<input
-             type="text"
-             id="Heart"
-             name="Heart"
-             placeholder='yes or no'
-             value={Heart || ""}
-             onChange={handleInputChange}
-             />
-<label htmlFor='youth'>Youth</label>
-<input
-             type="text"
-             id="youth"
-             name="youth"
-             placeholder='yes or no'
-             value={youth || ""}
-             onChange={handleInputChange}
-             />
-<label htmlFor='hobbies'>Hobbies</label>
-<input
-             type="text"
-             id="hobbies"
-             name="hobbies"
+             id="Hobbies"
+             name="Hobbies"
              placeholder='Hobbies'
-             value={hobbies || ""}
+             value={Hobbies || ""}
              onChange={handleInputChange}
              />
-<label htmlFor='skill_to_Share'>Skill to Share</label>
+<label htmlFor='Skill_to_share'>Skill to Share</label>
 <input
              type="text"
-             id="skill_to_Share"
-             name="skill_to_Share"
+             id="Skill_to_share"
+             name="Skill_to_share"
              placeholder='Skills'
-             value={skill_to_Share || ""}
+             value={Skill_to_share || ""}
              onChange={handleInputChange}
              />
-<label htmlFor='address'>Address</label>
+<label htmlFor='Address'>Address</label>
 <input
              type="text"
-             id="address"
-             name="address"
+             id="Address"
+             name="Address"
              placeholder='123 Main St'
-             value={address || ""}
+             value={Address || ""}
              onChange={handleInputChange}
              />
-                <label htmlFor='neighbor_day_BA'>Neighbor day BA</label>
-                <input
-                type="text"
-                id="neighbor_day_BA"
-                name="neighbor_day_BA"
-                placeholder='yes or no'
-                value={neighbor_day_BA || ""}
-                onChange={handleInputChange}
-                />
-                <button type = "submit"> Submit</button>
-                    
+<label htmlFor='Events_Attended'>Events Attended</label>
+<input
+             type="text"
+             id="Events_Attended"
+             name="Events_Attended"
+             placeholder='Youth, HEART, WCDP, Boone st bash...'
+             value={Events_Attended || ""}
+             onChange={handleInputChange}
+             />
+<label htmlFor='isDonor'>isDonor</label>
+<input
+             type="text"
+             id="isDonor"
+             name="isDonor"
+             placeholder='Yes or No'
+             value={isDonor || ""}
+             onChange={handleInputChange}
+             />
+<label htmlFor='Areas_of_Interest'>Areas of Interest</label>
+<input
+             type="text"
+             id="Areas_of_Interest"
+             name="Areas_of_Interest"
+             placeholder='Areas of Interest'
+             value={Areas_of_Interest || ""}
+             onChange={handleInputChange}
+             />
+
+                {/* <button type = "submit"> Submit</button> */}
+                <button type = "Submit">Submit</button> 
                 {/* <button type = "submit" value={Fname ? "Update" : "Save"}>Save</button> */}
                 {/* <Link to="/">
                     <input type="button" value="Go Back" />
